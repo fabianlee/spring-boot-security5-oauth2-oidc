@@ -6,7 +6,7 @@ Full Blog: https://fabianlee.org/2022/08/25/java-spring-security-oauth2-oidc-pro
 
 Tested with:
 * OpenJDK 17
-* Gradle 7.4 [Java compat](https://docs.gradle.org/current/userguide/compatibility.html)
+* [Gradle 7.4](https://docs.gradle.org/current/userguide/compatibility.html)
 * spring-boot:2.7.3
 * spring-security-core:5.7.3
 
