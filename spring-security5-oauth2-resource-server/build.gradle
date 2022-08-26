@@ -1,0 +1,141 @@
+plugins {
+  // https://plugins.gradle.org/plugin/org.springframework.boot
+  id 'org.springframework.boot' version '2.7.3'
+  // https://plugins.gradle.org/plugin/io.spring.dependency-management
+  id 'io.spring.dependency-management'  version '1.0.13.RELEASE'
+  id 'java'
+}
+
+group = 'org.fabianlee'
+version = '0.0.2-SNAPSHOT'
+// https://docs.gradle.org/current/userguide/compatibility.html
+// OpenJDK17 matches with Gradle 7.4
+// gradle wrapper --gradle-version=7.4
+sourceCompatibility = '17'
+targetCompatibility = '17'
+
+// additional variables
+ext.dockerOwner = 'fabianlee'
+ext.dockerVersion = '1.0'
+
+compileJava {
+  options.encoding = 'UTF-8'
+}
+
+gradle.projectsEvaluated {
+    tasks.withType(JavaCompile){
+        options.compilerArgs << "-Xlint:deprecation"
+    }
+}
+
+repositories {
+  mavenCentral()
+}
+
+dependencies {
+  implementation 'org.springframework.boot:spring-boot-starter-web'
+  implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
+  implementation 'org.springframework.boot:spring-boot-starter-oauth2-resource-server'
+  
+  developmentOnly 'org.springframework.boot:spring-boot-devtools'
+  testImplementation 'org.springframework.boot:spring-boot-starter-test'
+  
+  implementation 'org.projectlombok:lombok' // compileOnly does not allow IDE to use annotations
+  annotationProcessor 'org.projectlombok:lombok'
+  
+  implementation 'org.thymeleaf.extras:thymeleaf-extras-springsecurity5'
+}
+
+tasks.named('test') {
+  useJUnitPlatform()
+}
+test {
+    exclude 'org/fabianlee/**'
+}
+
+// makes BuildProperties available from Spring context
+springBoot {
+  buildInfo()
+}
+
+// for debug purposes
+task defaultProperties { 
+  doFirst {
+    println "Project: $project" 
+    println "Project directory: $projectDir" 
+    println "Build directory: $buildDir" 
+    println "Version: $version" 
+    println "Group: $project.group" 
+    println "dockerOwner: $project.dockerOwner" 
+    println "Description: $project.description" 
+    println "AntBuilder: $ant" 
+  }
+}
+
+// takes templatized Dockerfile, places into buildDir
+task prepareDockerfileTemplate(type: Copy) {
+    group "OCI"
+    dependsOn "bootJar"
+    from "src/main/resources/docker"
+    include "Dockerfile"
+    filter { it.replaceAll('<%=name%>', project.name) }
+    filter { it.replaceAll('<%=version%>', project.version) }
+    into "$buildDir"
+}
+
+task buildah(type: Exec) {
+    group "OCI"
+    dependsOn "prepareDockerfileTemplate"
+    workingDir "${buildDir}"
+    doFirst {
+      println "Executing 'buildah' task"
+    }
+   commandLine "buildah", "bud", "-f", "Dockerfile", "-t", project.name, "-t", "${project.name}:${dockerVersion}"
+}
+task buildahTag(type: Exec) {
+   group "OCI"
+   commandLine "buildah", "tag", "localhost/${project.name}:${dockerVersion}", "docker.io/${dockerOwner}/${project.name}:${dockerVersion}"
+}
+task buildahPush(type: Exec) {
+   group "OCI"
+   dependsOn "buildahTag"
+   commandLine "buildah", "push", "docker.io/${dockerOwner}/${project.name}:${dockerVersion}" 
+}
+
+
+task podmanCleanup(type: Exec) {
+    ignoreExitValue true
+    commandLine "podman", "rm", project.name
+}
+task podmanRun(type: Exec) {
+    group "OCI"
+    // buildah does not cache, so do not force complete rebuild
+    //dependsOn "buildah"
+    dependsOn podmanCleanup
+    commandLine "podman", "run", 
+      "-p", "8081:8081",
+      "--name", project.name,
+      "-e", "ADFS=${System.env.ADFS}", 
+      project.name
+    doLast {
+      println ""
+      println "To cleanup, run 'podman rm ${project.name}'"
+      println ""
+    }
+}
+
+task dockerCleanup(type: Exec) {
+    ignoreExitValue true
+    commandLine "docker", "rm", project.name
+}
+task dockerRun(type: Exec) {
+    group "OCI"
+    dependsOn dockerCleanup
+    commandLine "docker", "run",
+        "--network", "host", 
+        "-p", "8081:8081", 
+        "--name", project.name,
+        "-e", "ADFS=${System.env.ADFS}",
+        "${dockerOwner}/${project.name}:${dockerVersion}"
+}
+

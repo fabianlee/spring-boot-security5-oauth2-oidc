@@ -1,0 +1,164 @@
+<html>
+<head>
+
+<style>
+.apiheader {
+	font-size: large;
+	font-weight: bold;
+	float: left;
+	margin-right: 5px;
+}
+.apiresults {
+	background-color: #cccccc;
+	width: 800px;
+	height: 60px;
+	padding: 10 10 5 5;
+	font-size: small;
+	overflow: scroll;
+	border: 1px;
+}
+
+.methodinfo {
+	font-size: medium;
+}
+
+</style>
+
+<script>
+
+function doRequest(method,URL,bearer,populateElementId) {
+
+	fetch(URL, {
+        method: method,
+        mode: 'cors',
+        credentials: 'include',        
+        headers: {
+            'Authorization': 'Bearer ' + bearer
+        }
+    })
+    .then((response) => {
+                if (response.ok) {
+                	console.log(response.headers.get("Content-Type") + " from " + URL);
+                	return response.json();
+                } else if (response.status == 401) {
+                	throw("AUTH ERROR bad token 401 " + response.headers.get("WWW-Authenticate"));
+                } else if (response.status == 403) {
+                	throw("AUTH ERROR permissions 403 " + response.headers.get("WWW-Authenticate"));
+                } else {
+                	throw("ERROR " + response.status);
+                }
+    })
+    .then((jresp) => {
+                document.getElementById(populateElementId).innerHTML = JSON.stringify(jresp,null,"\t");
+    })
+    .catch((error) => {
+                console.error('Caught error: ', error);
+                document.getElementById(populateElementId).innerHTML = error;
+                alert(error);
+    });
+    
+} // doRequest
+
+
+function callREST(method,uri,populateElementId) {
+
+  var resource_server = document.getElementById('resource_server').value;
+  var token = document.getElementById('token').value;
+  
+  doRequest(method,resource_server + uri,token,populateElementId);
+
+} // callREST
+
+</script>  	
+
+
+</head>
+<body>
+
+<span th:switch="${accessToken !=null}">
+  <span th:case="false">There was no accessToken available</span>
+  <span th:case="true">
+    <h3>@RegisteredOAuth2AuthorizedClient accessToken</h3>
+  	
+  	<table>
+  	<tr>
+  		<td>tokenType</td>
+  		<td>[[${accessToken.getTokenType().getValue()}]]</td>
+  	</tr>
+  	<tr>
+  		<td>Scopes</td>
+  		<td>[[${accessToken.getScopes()}]]</td>
+  	</tr>
+  	<tr>
+  		<td>Issued At</td>
+  		<td>[[${accessToken.getIssuedAt()}]]</td>
+  	</tr>
+  	<tr>
+  		<td>Expires At</td>
+  		<td>[[${accessToken.getExpiresAt()}]]</td>
+  	</tr>
+  	</table>
+  	
+<form id="dataform">
+<p>JWT:<br/>
+<textarea id="token" rows="8" cols="110" style="font-size: small;">[[${accessToken.getTokenValue()}]]
+</textarea>
+</p>
+<p>Resource Server: <input id="resource_server" type="text" value="http://localhost:8081"/></p>
+</form>
+
+<p>&nbsp;</p>
+<span class="apiheader">GET /infojson</span>
+<input type="button" value="Invoke" onClick="callREST('GET','/infojson','GETinfojson')"/>
+<p class="methodinfo">
+Returns: build info<br/>
+Authorization: no authentication necessary</p>
+<div id="GETinfojson" class="apiresults">Press 'Invoke' to populate</div>
+
+<p>&nbsp;</p>
+<span class="apiheader">GET /api/user/me</span>
+<input type="button" value="Invoke" onClick="callREST('GET','/api/user/me','GETapiuserme')"/>
+<p class="methodinfo">
+Returns: authenticated user email/authorities/scope/groups<br/>
+Authorization: any logged in user</p>
+<div id="GETapiuserme" class="apiresults">Press 'Invoke' to populate</div>
+
+<p>&nbsp;</p>
+<span class="apiheader">GET /api/user</span>
+<input type="button" value="Invoke" onClick="callREST('GET','/api/user','GETapiuser')"/>
+<p class="methodinfo">
+Returns: list of users<br/>
+Authorization: any logged in user</p>
+<div id="GETapiuser" class="apiresults">Press 'Invoke' to populate</div>
+
+<p>&nbsp;</p>
+<span class="apiheader">DELETE /api/user</span>
+<input type="button" value="Invoke" onClick="callREST('DELETE','/api/user','DELETEapiuser')"/>
+<p class="methodinfo">
+Returns: http status code</p> 
+Authorization: callee in group 'managers' and 'api_delete' scope<br/>
+<div id="DELETEapiuser" class="apiresults">Press 'Invoke' to populate</div>
+
+<p>&nbsp;</p>
+<span class="apiheader">GET /api/user/engineer</span>
+<input type="button" value="Invoke" onClick="callREST('GET','/api/user/engineer','GETapiuserengineer')"/>
+<p class="methodinfo">
+Returns: list of engineers<br/>
+Authorization: callee in group 'engineers' or 'managers'</p>
+<div id="GETapiuserengineer" class="apiresults">Press 'Invoke' to populate</div>
+
+<p>&nbsp;</p>
+<span class="apiheader">GET /api/user/manager</span>
+<input type="button" value="Invoke" onClick="callREST('GET','/api/user/manager','GETapiusermanager')"/>
+<p class="methodinfo">
+Returns: list of managers<br/>
+Authorization: callee in group 'managers'</p>
+<div id="GETapiusermanager" class="apiresults">Press 'Invoke' to populate</div>
+
+
+  </span>
+</span>
+
+
+</body>
+</html>

@@ -1,0 +1,41 @@
+server:
+  port: 8081
+  ssl:
+    enabled: false
+
+logging:
+  file:
+    name: oauth2-resource-server.log
+  level:
+    ROOT: WARN
+    org.springframework.web: DEBUG
+    org.apache.coyote: WARN
+    org.fabianlee: DEBUG
+  pattern:
+    console: '[%thread] %-5level %logger{56} - %msg%n'
+    file: '%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n'
+
+spring:
+
+  thymeleaf:
+    enabled: true
+    check-template: true
+    check-template-location: true
+    prefix: classpath:/templates/
+    suffix: .html
+      
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer: https://${ADFS:win2k19-adfs1.fabian.lee}/adfs
+          jwk-set-uri: https://${ADFS:win2k19-adfs1.fabian.lee}/adfs/discovery/keys
+          token-uri: https://${ADFS:win2k19-adfs1.fabian.lee}/adfs/oauth2/token
+          #userInfoUri: https://${ADFS:win2k19-adfs1.fabian.lee}/adfs/userinfo
+          user-info-uri: https://${ADFS:win2k19-adfs1.fabian.lee}/adfs/userinfo
+          
+          # for Google
+          #issuer-uri: https://accounts.google.com
+          #token-uri: https://oauth2.googleapis.com/token
+          #userInfoUri: https://www.googleapis.com/oauth2/v3/userinfo
+          #jwk-set-uri: https://www.googleapis.com/oauth2/v3/certs

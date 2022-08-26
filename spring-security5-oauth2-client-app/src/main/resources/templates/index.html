@@ -1,0 +1,48 @@
+<!doctype html>
+<html xmlns:th="https://www.thymeleaf.org" 
+  xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity5">
+<head>
+    <title>Login with OAuth2/OIDC</title>
+</head>
+<body>
+    <h1>Login with OAuth2/OIDC</h1>
+    
+    <div sec:authorize="isAuthenticated()">
+      Name: <span sec:authentication="name"></span><br/>
+      Name mapping: <span id="name"></span></br/>
+      
+	    <p>
+	    	<a href="/id">[view id token]</a>
+	    	<a href="/access">[view access token]</a>
+	    </p>
+	    
+	    <p>
+	    <form method="GET" action="/logout"><input type="submit" value="Default Logout"/></form>
+	    </p>
+      
+    </div>
+      
+    <div sec:authorize="${ ! isAuthenticated()}">
+      <form method="GET" action="/login"><input type="submit" value="Default Login"/></form>
+    </div>
+      
+    <script>
+        fetch('/user')
+            .then(response => {
+                if (response.ok) {
+                    return response.json();
+                } else {
+                    throw new Error('NOT response.ok');
+                }
+            })
+            .then(data => {
+            	if(document.getElementById('name')) {
+                	document.getElementById('name').innerText = data.name;
+                }
+            })
+            .catch((error) => {
+                console.error('Caught fetch error which is expected when not logged in: ', error);
+            });
+    </script>
+</body>
+</html>

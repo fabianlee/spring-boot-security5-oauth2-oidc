@@ -1,0 +1,124 @@
+server:
+  port: 8080
+  # custom variable
+  baseURL: http://localhost:${server.port}
+  ssl:
+    enabled: false
+    
+
+logging:
+  file:
+    name: oauth2-client.log
+  level:
+    ROOT: WARN
+    org.springframework.web.client: DEBUG
+    org.fabianlee: DEBUG
+  pattern:
+    console: '[%thread] %-5level %logger{56} - %msg%n'
+    file: '%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n'
+
+spring:
+
+  thymeleaf:
+    enabled: true
+    check-template: true
+    check-template-location: true
+    prefix: classpath:/templates/
+    suffix: .html
+      
+  security:
+    oauth2:
+      client:
+        registration:
+        
+          github:
+            clientId: ${GITHUB_CLIENT_ID}
+            clientSecret: ${GITHUB_CLIENT_SECRET}
+
+          spotify:
+            provider: spotify-provider
+            clientId: ${SPOTIFY_CLIENT_ID}
+            clientSecret: ${SPOTIFY_CLIENT_SECRET}
+            # shows this in web UI listing
+            clientName: Spotify
+            client-authentication-method: basic
+            scope: streaming,user-read-email
+            redirectUri: http://localhost:8080/login/oauth2/code/spotify
+            authorization-grant-type: authorization_code
+
+          google:
+            clientId: ${GOOGLE_CLIENT_ID}
+            clientSecret: ${GOOGLE_CLIENT_SECRET}
+
+#          facebook:
+#            clientId: ${FACEBOOK_CLIENT_ID}
+#            clientSecret: ${FACEBOOK_CLIENT_SECRET}
+
+#          okta:
+#            clientId: ${OKTA_CLIENT_ID}
+#            clientSecret: ${OKTA_CLIENT_SECRET}
+#            # show this name in web UI listing
+#            clientName: Okta
+#            client-authentication-method: basic
+#            # needed in newer spring-security versions
+#            # https://developer.spotify.com/documentation/web-api/reference/#/operations/get-current-users-profile
+#            scope: openid,profile,email
+
+          adfs:
+            client-id: ${ADFS_CLIENT_ID}
+            client-secret: ${ADFS_CLIENT_SECRET}
+            clientName: ADFS
+            authorization-grant-type: authorization_code
+            redirectUri: ${server.baseURL}/login/oauth2/code/adfs
+            # https://docs.microsoft.com/en-us/windows-server/identity/ad-fs/development/ad-fs-openid-connect-oauth-concepts#scopes
+            scope: openid,allatclaims${ADFS_ADDITIONAL_SCOPES:,api_delete}
+            client-authentication-method: basic
+
+          # https://github.com/spring-projects/spring-security/issues/9047
+          # Apple requires POST
+#          apple:
+#            client-authentication-method: post
+
+#          linkedin:
+#            clientId: ${LINKEDIN_CLIENT_ID}
+#            clientSecret: ${LINKEDIN_CLIENT_SECRET}
+#            clientName: LinkedIn
+#            authorizationGrantType: authorization_code
+#            redirectUri: "{baseUrl}/login/oauth2/code/{registrationId}"
+#            scope: r_liteprofile, r_emailaddress
+
+        provider:
+#          github:
+#            authorization-uri: https://github.com/login/oauth/authorize
+#            token-uri: https://github.com/login/oauth/access_token
+            
+          adfs:
+            # non-standard parameter 'resource' required
+            # https://stackoverflow.com/questions/41105289/401-when-calling-userinfo-using-adfs-4-0-and-openid-connect
+            # https://social.technet.microsoft.com/Forums/windowsserver/en-US/679a7998-3836-4526-9685-9386744f031c/the-access-token-in-the-request-doesnt-have-required-audience#fc461681-823a-451c-a7ac-a80051811efd
+            authorization-uri: https://${ADFS:win2k19-adfs1.fabian.lee}/adfs/oauth2/authorize?resource=${ADFS_CLIENT_ID}
+            user-info-authentication-method: basic
+            user-name-attribute: upn # sub
+            # must match exact case of 'issuer' at /adfs/.well-known/openid-configuration
+            issuerUri: https://${ADFS:win2k19-adfs1.fabian.lee}/adfs
+            # pulled from issuerUri above, do not need to specify
+            #user-info-uri: https://${ADFS_URL:win2k19-adfs1.fabian.lee}/adfs/userinfo
+            #jwk-set-uri: https://${ADFS_URL:win2k19-adfs1.fabian.lee}/adfs/discovery/keys
+            
+#          okta:
+#            issuerUri: https://${OKTA_URL:dev-xxxxxx.okta.com}/oauth2/default
+
+          spotify-provider:
+            authorization-uri: https://accounts.spotify.com/authorize
+            token-uri: https://accounts.spotify.com/api/token
+            user-info-uri: https://api.spotify.com/v1/me
+            # need to rely on different attribute than default 'name'
+            #   Missing required "user name" attribute name in UserInfoEndpoint for Client Registration
+            # https://developer.spotify.com/documentation/web-api/reference/#/operations/get-current-users-profile
+            user-name-attribute: email
+
+#          linkedin:
+#            authorizationUri: https://www.linkedin.com/oauth/v2/authorization
+#            tokenUri: https://www.linkedin.com/oauth/v2/accessToken
+#            userInfoUri: https://api.linkedin.com/v2/me
+#            userNameAttribute: id
