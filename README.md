@@ -5,7 +5,7 @@ blog: https://fabianlee.org/2022/08/25/java-spring-security-oauth2-oidc-protecti
 Java Spring Boot implementations of OAuth2 entities:
 
 * [Client Application, web app](spring-security5-oauth2-client-app/README.md)
-* [Resource Server, microservice)(spring-security5-oauth2-resource-server/README.md)
+* [Resource Server, microservice](spring-security5-oauth2-resource-server/README.md)
 
 Using:
 * OpenJDK 17
