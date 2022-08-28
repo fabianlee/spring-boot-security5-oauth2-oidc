@@ -22,6 +22,27 @@ Tested with:
 * DELETE /api/user - deletes last user in list (callee must be in managers group and have 'api_delete' scope)
 * GET /api/user/engineer - returns list of engineers (callee must be in engineers or managers group)
 * GET /api/user/manager - returns list of managers (callee must be in managers group)
+
+
+## Run using local Docker daemon
+
+```
+docker --version
+
+# your ADFS server hostname
+export ADFS=win2k19-adfs1.fabian.lee
+
+# clear out any older runs
+docker rm spring-security5-oauth2-resource-server
+
+# run docker image locally, listening on localhost:8080
+docker run \
+--network host \
+-p 8081:8081 \
+--name spring-security5-oauth2-resource-server \
+-e ADFS=$ADFS \
+fabianlee/spring-security5-oauth2-resource-server:1.0
+```
   
 
 ## Run using host JVM and gradle

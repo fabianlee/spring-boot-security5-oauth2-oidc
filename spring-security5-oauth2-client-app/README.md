@@ -14,6 +14,36 @@ Tested with:
 ![OAuth2 Entities](https://github.com/fabianlee/spring-boot-security5-oauth2-oidc/raw/main/diagrams/oauth2-entities.drawio.png)
   
 
+## Run using local Docker daemon
+
+```
+docker --version
+
+# your ADFS server
+export ADFS=win2k19-adfs1.fabian.lee
+
+# OAuth2 client, secret, scope
+export ADFS_CLIENT_ID=<the oauth2 client id>
+export ADFS_CLIENT_SECRET=<the oauth2 client secret>
+export ADFS_SCOPE="openid allatclaims api_delete"
+
+# clear out any older runs
+docker rm spring-security5-oauth2-client-app
+
+# run docker image locally, listening on localhost:8080
+docker run \
+--network host \
+-p 8080:8080 \
+--name spring-security5-oauth2-client-app \
+-e ADFS_CLIENT_ID=$ADFS_CLIENT_ID \
+-e ADFS_CLIENT_SECRET=$ADFS_CLIENT_SECRET \
+-e ADFS=$ADFS \
+-e ADFS_SCOPE="$ADFS_SCOPE" \
+fabianlee/spring-security5-oauth2-client-app:1.0
+```
+
+
+
 ## Run using host JVM and gradle
 
 ```
