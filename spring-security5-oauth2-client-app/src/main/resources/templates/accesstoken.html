@@ -78,7 +78,7 @@ function callREST(method,uri,populateElementId) {
 <span th:switch="${accessToken !=null}">
   <span th:case="false">There was no accessToken available</span>
   <span th:case="true">
-    <h3>@RegisteredOAuth2AuthorizedClient accessToken</h3>
+    <h3>OAuth2AuthorizedClient accessToken</h3>
   	
   	<table>
   	<tr>

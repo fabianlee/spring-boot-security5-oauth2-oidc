@@ -56,7 +56,7 @@ public class OAuth2Controller {
     }
 
     @GetMapping("/id")
-	public String userinfo(Model model, @AuthenticationPrincipal OidcUser principal) { //OAuth2User principal) {
+	public String userinfo(Model model, @AuthenticationPrincipal OidcUser principal) {
 
         String theName = principal.getAttribute("name")==null ? principal.getName():principal.getAttribute("name");
         model.addAttribute("name",theName);
