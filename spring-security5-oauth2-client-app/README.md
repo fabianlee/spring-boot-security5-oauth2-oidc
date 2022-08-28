@@ -59,7 +59,7 @@ export ADFS_CLIENT_ID=<the oauth2 client id>
 export ADFS_CLIENT_SECRET=<the oauth2 client secret>
 export ADFS_SCOPE="openid allatclaims api_delete"
 
-# start on port 8080
+# start on port 8080, add '--debug-jvm' for JDWP debugging on port 5005
 ./gradlew bootRun
 
 ```
@@ -78,6 +78,21 @@ export ADFS_SCOPE="openid allatclaims api_delete"
 ./gradlew bootJar
 ./gradlew docker
 ./gradlew dockerRun
+
+```
+
+## Pull spring-security source for IDE step-through debugging
+
+```
+# get proper branch
+git clone https://github.com/spring-projects/spring-security.git -b 5.7.x spring-security-src
+cd spring-security-src
+
+# get on exact tag
+git checkout 5.7.3
+
+# verify, it is OK to be in detatched state
+git branch
 
 ```
 

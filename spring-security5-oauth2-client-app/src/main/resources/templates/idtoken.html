@@ -1,54 +1,19 @@
-<span th:if="${oauth2 != null}">
-<h3>@AuthenticationPrincipal: [[${name}]] of type OAuth2</h3>
-  	
-  	<table>
-  	<tr>
-  		<th>Attributes</th>
-  		<th>&nbsp;</th>
-  	</tr>
-  	<tr th:each="att : ${oauth2.getAttributes()}">
-      <td>[[${att.key}]]</td>
-      <td>[[${att.value}]]</td>
-    </tr>
-    </table>
-  	
-  	<table>
-  	<tr>
-  		<th>Authority</th>
-  	</tr>
-  	<tr th:each="auth : ${oauth2.getAuthorities()}">
-      <td>[[${auth}]]</td>
-    </tr>
-    </table>
-  	
-</span>
-
 <span th:if="${oidc != null}">
 <h3>@AuthenticationPrincipal: [[${name}]] of type OIDC</h3>
 
   	<table>
   	<tr>
-  		<th>Claims</th>
+  		<th><a href="https://openid.net/specs/openid-connect-core-1_0.html#IDToken">Mandatory Claims</a></th>
   		<th>&nbsp;</th>
   	</tr>
-  	<tr th:each="claim : ${oidc.getClaims()}">
-      <td>[[${claim.key}]]</td>
-      <td>[[${claim.value}]]</td>
+  	<tr th:each="key : ${id_required_fields}">
+      <td>[[${key}]]</td>
+      <td>[[${oidc.getClaim(key)}]]</td>
     </tr>
     </table>
     
+   <p>Below is the raw ID token, there are other claims embedded in this ID token JWT (that overlap what is available in the Access Token).
+   </p>  
    <p>[[${oidc.getIdToken().getTokenValue()}]]</p>
   
 </span>
-
-
-<!--
-<h3>@AuthenticationPrincipal: [[${name}]] of type [[${principalType}]]</h3>
-<span th:switch="${principalType}">
-  <span th:case="oauth2">
-    <h3>OAuth2</h3>
-  <span th:case="oidc">
-      <h3>OIDC</h3>
-  </span>
-</span>  
--->    

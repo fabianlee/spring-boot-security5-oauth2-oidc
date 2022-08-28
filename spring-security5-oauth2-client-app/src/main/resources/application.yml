@@ -9,9 +9,11 @@ server:
 logging:
   file:
     name: oauth2-client.log
+    max-history: 0
   level:
     ROOT: WARN
-    org.springframework.web.client: DEBUG
+    org.springframework.security.oauth2: WARN
+    org.springframework.web.client: WARN
     org.fabianlee: DEBUG
   pattern:
     console: '[%thread] %-5level %logger{56} - %msg%n'
