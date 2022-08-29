@@ -61,15 +61,6 @@ public class UserController {
             return userListV1;
         }
         
-        @RequestMapping(method = RequestMethod.OPTIONS)
-        ResponseEntity<?> singularOptions() 
-        {
-           return ResponseEntity
-               .ok()
-               .allow(HttpMethod.GET, HttpMethod.DELETE, HttpMethod.PUT, HttpMethod.OPTIONS)
-                   .build();
-        }
-        
         @DeleteMapping
         @PreAuthorize("hasRole('managers') && hasAuthority('SCOPE_api_delete')")
         public Iterable<User> deleteUser() {
@@ -113,5 +104,17 @@ public class UserController {
             		);
             return new ResponseEntity<List<User>>(managers,HttpStatus.OK);
         }
+
+        /*      
+        // SecurityFilterChain cors() method takes care of OPTIONS being available without authentication  
+        @RequestMapping(method = RequestMethod.OPTIONS)
+        ResponseEntity<?> singularOptions() 
+        {
+           return ResponseEntity
+               .ok()
+               .allow(HttpMethod.GET, HttpMethod.DELETE, HttpMethod.PUT, HttpMethod.OPTIONS)
+                   .build();
+        }
+*/        
         
 }
