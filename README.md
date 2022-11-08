@@ -24,7 +24,7 @@ Using:
 ./gradlew buildah [-PdockerVersion=1.0.1 ]
 ```
 
-## Root project, create OCI images for subpeojcts with docker
+## Root project, create OCI images for subprojects with docker
 
 ```
 ./gradlew bootJar
