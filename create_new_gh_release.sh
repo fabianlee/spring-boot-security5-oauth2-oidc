@@ -67,7 +67,7 @@ if [[ "$answer" == "y" ]]; then
   git commit -a -m "changes for new tag $newtag"
   git tag $newtag && git push origin $newtag
   git push
-  gh release create $newtag -F /tmp/$newtag.log spring-security5-oauth2-resource-server/build/libs/spring-security5-oauth2-resource-server.jar -F spring-security5-oauth2-client-app/build/libs/spring-security5-oauth2-client-app.jar
+  gh release create $newtag -F /tmp/$newtag.log spring-security5-oauth2-resource-server/build/libs/spring-security5-oauth2-resource-server.jar spring-security5-oauth2-client-app/build/libs/spring-security5-oauth2-client-app.jar
   set +x
 else
   echo "aborted release creation"
