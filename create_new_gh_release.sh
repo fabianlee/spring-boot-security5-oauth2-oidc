@@ -7,6 +7,9 @@
 # check for Github CLI binaries
 gh_bin=$(which gh)
 [ -n "$gh_bin" ] || { echo "ERROR Github CLI binary not available, https://fabianlee.org/2022/04/21/github-cli-tool-for-repository-operations/"; exit 2; }
+# check for java compiler
+java_bin=$(which javac)
+[ -n "$java_bin" ] || { echo "ERROR Java compiler not available, 'sudo apt search openjdk-*; sudo apt install openjdk-xx-jdk'"; exit 2; }
 
 # 
 # CALCULATE NEW SEMANTIC TAG (vX.Y.Z)
