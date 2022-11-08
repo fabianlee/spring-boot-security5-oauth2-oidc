@@ -17,14 +17,14 @@ Using:
 ![OAuth2 Entities](https://github.com/fabianlee/spring-boot-security5-oauth2-oidc/raw/main/diagrams/oauth2-entities.drawio.png)
 
 
-## Root Gradle project, create OCI image with buildah
+## Root project, create OCI images for subprojects with buildah
 
 ```
 ./gradlew bootJar
 ./gradlew buildah [-PdockerVersion=1.0.1 ]
 ```
 
-## Root Gradle project, create OCI image with docker
+## Root project, create OCI images for subpeojcts with docker
 
 ```
 ./gradlew bootJar
