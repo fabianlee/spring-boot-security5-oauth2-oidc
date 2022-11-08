@@ -7,7 +7,9 @@ plugins {
 }
 
 group = 'org.fabianlee'
-version = '0.0.2-SNAPSHOT'
+version = '' // bootJar will not have version suffixed
+//version = project.getProperty('version')=="unspecified" ? '0.0.2-SNAPSHOT':version
+
 // https://docs.gradle.org/current/userguide/compatibility.html
 // OpenJDK17 matches with Gradle 7.4
 // gradle wrapper --gradle-version=7.4
@@ -16,7 +18,7 @@ targetCompatibility = '17'
 
 // additional variables
 ext.dockerOwner = 'fabianlee'
-ext.dockerVersion = '1.0'
+ext.dockerVersion = project.hasProperty('dockerVersion') ? project.getProperty('dockerVersion'):'1.0.1'
 
 compileJava {
   options.encoding = 'UTF-8'
@@ -73,6 +75,7 @@ task defaultProperties {
     println "dockerOwner: $project.dockerOwner" 
     println "Description: $project.description" 
     println "AntBuilder: $ant" 
+    println "dockerVersion: $dockerVersion"
   }
 }
 
@@ -83,7 +86,6 @@ task prepareDockerfileTemplate(type: Copy) {
     from "src/main/resources/docker"
     include "Dockerfile"
     filter { it.replaceAll('<%=name%>', project.name) }
-    filter { it.replaceAll('<%=version%>', project.version) }
     into "$buildDir"
 }
 

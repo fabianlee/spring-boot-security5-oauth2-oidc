@@ -22,7 +22,7 @@ USER spring:spring
 # main REST service and OpenAPI /swagger-ui/index.html
 EXPOSE 8080
 
-COPY libs/<%=name%>-<%=version%>.jar app.jar
+COPY libs/<%=name%>.jar app.jar
 CMD ["java","-jar","app.jar"]
 
 
