@@ -26,8 +26,9 @@ else
   newtag="v1.0.1"
 fi
 echo "old version: $semantic_version new_version: ${newtag}"
+docker_version=${newtag//v/}
+echo "docker_version: $docker_version"
 
-exit 0
 
 #
 # GRADLE BUILD OF SPRING BOOTJAR
@@ -36,7 +37,7 @@ exit 0
 # construct bootJar and local image, then push to docker hub
 ./gradlew bootJar
 echo "Spring BootJar built"
-#./gradlew buildah buildahTag buildahPush
+./gradlew buildah buildahTag buildahPush -PdockerVersion=$docker_version
 echo "Images pushed to Docker hub"
 
 
@@ -66,7 +67,7 @@ if [[ "$answer" == "y" ]]; then
   git commit -a -m "changes for new tag $newtag"
   git tag $newtag && git push origin $newtag
   git push
-  gh release create $newtag -F /tmp/$newtag.log build/main
+  gh release create $newtag -F /tmp/$newtag.log spring-security5-oauth2-resource-server/build/libs/spring-security5-oauth2-resource-server.jar -F spring-security5-oauth2-client-app/build/libs/spring-security5-oauth2-client-app.jar
   set +x
 else
   echo "aborted release creation"
