@@ -31,4 +31,3 @@ Using:
 ./gradlew docker [-PdockerVersion=1.0.1 ]
 
 ```
-
