@@ -60,9 +60,11 @@ jobs:
         prevtag="${major_minor}.${patch}"
 
         if git tag | grep $prevtag ; then
-          git log -q ${curtag}...${prevtag} --pretty="- %s" -q --no-color >> body.log
+          #git log -q ${curtag}...${prevtag} --pretty="- %s" -q --no-color >> body.log
+          echo "git log for $curtag to $prevtag" >> body.log
         else
-          git log --pretty="- %s" -q --no-color >> body.log
+          #git log --pretty="- %s" -q --no-color >> body.log
+          echo "git log for all" >> body.log
         fi
         line_count=$(cat body.log | wc -l)
 
