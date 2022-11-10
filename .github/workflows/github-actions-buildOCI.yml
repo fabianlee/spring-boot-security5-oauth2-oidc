@@ -99,13 +99,15 @@ jobs:
       - name: Execute Gradle build of OCI
         run: ./gradlew bootJar buildah
 
-#      - name: Buildah push
-#        uses: redhat-actions/buildah-build@v2
-#        with:
-#          image: spring-security5-oauth2-resource-server
-#          tags: latest ${GITHUB_REF_NAME}
-#          containerfiles: build/Dockerfile
-#          workingdir: build
+      - run: buildah images
+
+      - name: Buildah push
+        uses: redhat-actions/buildah-build@v2
+        with:
+          image: spring-security5-oauth2-resource-server
+          tags: latest ${GITHUB_REF_NAME}
+          containerfiles: build/Dockerfile
+          workingdir: build
 
       # build OCI image and push to registries (Docker Hub and Github Container Registry)
 #      - name: build and push docker image
