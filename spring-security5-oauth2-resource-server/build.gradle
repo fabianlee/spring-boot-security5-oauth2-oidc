@@ -96,7 +96,7 @@ task buildah(type: Exec) {
 }
 task buildahTag(type: Exec) {
    group "OCI"
-   commandLine "buildah", "tag", "localhost/${project.name}:${dockerVersion}", "docker.io/${dockerOwner}/${project.name}:${dockerVersion}"
+   commandLine "buildah", "tag", "localhost/${project.name}:${dockerVersion}", "docker.io/${dockerOwner}/${project.name}:${dockerVersion}", "ghcr.io/${dockerOwner}/${project.name}:${dockerVersion}"
 }
 task buildahPush(type: Exec) {
    group "OCI"
