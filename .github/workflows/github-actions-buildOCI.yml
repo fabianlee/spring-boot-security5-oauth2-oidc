@@ -97,7 +97,7 @@ jobs:
         uses: gradle/wrapper-validation-action@v1
   
       - name: Execute Gradle build of OCI
-        run: ./gradlew bootJar buildah buildahTag -PdockerVersion=${{ env.GITHUB_REF_NAME }}
+        run: ./gradlew bootJar buildah buildahTag -PdockerVersion=${GITHUB_REF_NAME}
 
       - name: list buildah images available
         run: buildah images
