@@ -51,23 +51,6 @@ jobs:
           GITHUB_CONTEXT: ${{ toJson(github) }}
         run: echo "$GITHUB_CONTEXT"
 
-      # tags and labels
-      - name: Extract metadata (tags, labels) for image ${{ env.FULL_IMAGE_NAME }}
-        id: meta
-        uses: docker/metadata-action@v4
-        with:
-          # https://docs.github.com/en/actions/publishing-packages/publishing-docker-images
-          # push to both docker hub and Github Container Registry
-          images: |
-            ${{ env.FULL_IMAGE_NAME }}
-            #${{ env.GH_REGISTRY }}/${{ env.FULL_IMAGE_NAME }}
-          tags: |
-            type=semver,pattern={{version}}
-            type=ref,event=pr
-            type=ref,event=branch
-#            # in addition to full semantic version (x.y.z) would also create (x.y)
-#            #type=semver,pattern={{major}}.{{minor}}
-
       # Java environment
       - name: setup Java
         uses: actions/setup-java@v3
@@ -85,13 +68,15 @@ jobs:
   
       - name: Validate Gradle wrapper matches official SHA-256 checksums for security
         uses: gradle/wrapper-validation-action@v1
-  
+
+      # build and tag using Gradle
       - name: Execute Gradle build of OCI
         run: ./gradlew bootJar buildah buildahTag -PdockerVersion=${{ steps.getversion.outputs.VERSION }}
 
       - name: list buildah images available
         run: buildah images
 
+      # PUSH TO GIBHUB CONTAINER REGISTRY
       - name: Buildah push to GH Registry spring-security5-oauth2-resource-server
         uses: redhat-actions/push-to-registry@v2
         with:
@@ -102,17 +87,6 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
           extra-args: |
             --disable-content-trust
-      - name: Buildah push to Docker Registry spring-security5-oauth2-resource-server
-        uses: redhat-actions/push-to-registry@v2
-        with:
-          image: spring-security5-oauth2-resource-server
-          tags: ${{ steps.getversion.outputs.VERSION }} latest
-          registry: docker.io/${{ github.repository_owner }}
-          username: ${{ secrets.DOCKER_USERNAME }}
-          password: ${{ secrets.DOCKER_TOKEN }}
-          extra-args: |
-            --disable-content-trust
-
       - name: Buildah push to Registry spring-security5-oauth2-client-app
         uses: redhat-actions/push-to-registry@v2
         with:
@@ -124,3 +98,24 @@ jobs:
           extra-args: |
             --disable-content-trust
 
+      # PUSH TO DOCKER HUB
+      - name: Buildah push to Docker Registry spring-security5-oauth2-resource-server
+        uses: redhat-actions/push-to-registry@v2
+        with:
+          image: spring-security5-oauth2-resource-server
+          tags: ${{ steps.getversion.outputs.VERSION }} latest
+          registry: docker.io/${{ github.repository_owner }}
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_TOKEN }}
+          extra-args: |
+            --disable-content-trust
+      - name: Buildah push to Docker Registry spring-security5-oauth2-client-app
+        uses: redhat-actions/push-to-registry@v2
+        with:
+          image: spring-security5-oauth2-client-app
+          tags: ${{ steps.getversion.outputs.VERSION }} latest
+          registry: docker.io/${{ github.repository_owner }}
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_TOKEN }}
+          extra-args: |
+            --disable-content-trust
