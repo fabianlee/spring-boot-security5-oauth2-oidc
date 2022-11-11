@@ -133,7 +133,7 @@ jobs:
 
       # build OCI image and push to registries (Docker Hub and Github Container Registry)
       - name: build and push docker image
-        uses: docker/push-action@v3
+        uses: docker/build-push-action@v3
         with:
           push: true
           tags: ${{ steps.meta.outputs.tags }}
