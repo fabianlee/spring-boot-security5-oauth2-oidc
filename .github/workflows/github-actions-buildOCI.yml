@@ -105,7 +105,7 @@ jobs:
       - name: Buildah push to Registry
         uses: redhat-actions/push-to-registry@v2
         with:
-          image: ${{ github.actor }}/spring-security5-oauth2-resource-server
+          image: spring-security5-oauth2-resource-server
           tags: latest ${{ env.GITHUB_REF_NAME }}
           registry: ${{ env.GH_REGISTRY }}/${{ github.repository_owner }}
           username: ${{ github.actor }}
