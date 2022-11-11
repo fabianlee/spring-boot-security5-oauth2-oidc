@@ -92,12 +92,19 @@ jobs:
           java-version: '17'
           distribution: adopt
           cache: gradle
+
+      - name: strip off 'v' from GITHUB_REF_NAME
+        id: getversion
+        run: |
+          VERSION=${GITHUB_REF_NAME}
+          echo "VERSION=${}" >> $GITHUB_OUTPUT
+      - run: echo version for image: ${{ steps.getversion.outputs.VERSION }}
   
       - name: Validate Gradle wrapper matches official SHA-256 checksums for security
         uses: gradle/wrapper-validation-action@v1
   
       - name: Execute Gradle build of OCI
-        run: ./gradlew bootJar buildah buildahTag -PdockerVersion=${GITHUB_REF_NAME}
+        run: ./gradlew bootJar buildah buildahTag -PdockerVersion=${{ steps.getversion.outputs.VERSION }}
 
       - name: list buildah images available
         run: buildah images
@@ -106,7 +113,7 @@ jobs:
         uses: redhat-actions/push-to-registry@v2
         with:
           image: spring-security5-oauth2-resource-server
-          tags: latest ${{ env.GITHUB_REF_NAME }}
+          tags: ${{ steps.getversion.outputs.VERSION }}
           registry: ${{ env.GH_REGISTRY }}/${{ github.repository_owner }}
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
