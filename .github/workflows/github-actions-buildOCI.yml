@@ -71,7 +71,7 @@ jobs:
 
       # build and tag using Gradle
       - name: Execute Gradle build of OCI
-        run: ./gradlew bootJar buildah buildahTag -PdockerVersion=${{ steps.getversion.outputs.VERSION }}
+        run: ./gradlew bootJar buildah -PdockerVersion=${{ steps.getversion.outputs.VERSION }}
 
       - name: list buildah images available
         run: buildah images

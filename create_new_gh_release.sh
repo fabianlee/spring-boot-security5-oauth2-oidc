@@ -40,7 +40,7 @@ echo "docker_version: $docker_version"
 # construct bootJar and local image, then push to docker hub
 ./gradlew bootJar
 echo "Spring BootJar built"
-./gradlew buildah buildahTag buildahPush -PdockerVersion=$docker_version
+./gradlew buildah buildahPush -PdockerVersion=$docker_version
 echo "Images pushed to Docker hub"
 
 
