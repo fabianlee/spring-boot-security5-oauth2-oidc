@@ -101,7 +101,7 @@ task buildah(type: Exec) {
 }
 task buildahPush(type: Exec) {
    group "OCI"
-   dependsOn "buildahTag"
+   dependsOn "buildah"
    commandLine "buildah", "push", "docker.io/${ownerProject}:${dockerVersion}" 
 
 }
